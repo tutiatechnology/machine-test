@@ -1,12 +1,10 @@
-import { View, Text, SafeAreaView, StyleSheet } from "react-native";
+import { View, SafeAreaView, StyleSheet } from "react-native";
 import React, { useEffect } from "react";
-import { createUserTable } from "../db/user.db";
 import LoginForm from "../components/auth/LoginForm";
 
 export default function LoginScreen() {
   useEffect(() => {
     // create table if not exist
-    createUserTable();
   }, []);
   return (
     <SafeAreaView>
