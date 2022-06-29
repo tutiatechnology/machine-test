@@ -1,6 +1,7 @@
 import { View, Text, SafeAreaView, StyleSheet } from "react-native";
 import React, { useEffect } from "react";
 import { createUserTable } from "../db/user.db";
+import LoginForm from "../components/auth/LoginForm";
 
 export default function LoginScreen() {
   useEffect(() => {
@@ -10,7 +11,7 @@ export default function LoginScreen() {
   return (
     <SafeAreaView>
       <View style={styles.container}>
-        <Text>Login</Text>
+        <LoginForm />
       </View>
     </SafeAreaView>
   );
