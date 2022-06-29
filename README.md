@@ -1,7 +1,7 @@
 ## Machine Test
 
-Test project with React Native + Expo. using local sqlite-database
-for database.
+Test project implemented with React Native + Expo. using local sqlite-database
+for database (can be use REST API in next version).
 
 ## Apk
 
