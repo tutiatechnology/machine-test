@@ -1,15 +1,18 @@
+import { useNavigation } from "@react-navigation/native";
 import { useState } from "react";
+import { Image, ImageBackground, Pressable } from "react-native";
 import {
   View,
   Text,
   TouchableOpacity,
   TextInput,
   ActivityIndicator,
-  ImageBackground,
 } from "react-native";
+import { Input } from "react-native-elements";
 import tw from "twrnc";
 import { openDatabase } from "../../db/connect";
 export default function LoginForm() {
+  const navigation = useNavigation();
   const [values, setValues] = useState({
     identifier: "",
     password: "",
@@ -21,7 +24,7 @@ export default function LoginForm() {
     for (const key in values) {
       if (!values[key]) {
         setPending(false);
-        setError("Email or Phone and Password are required!");
+        setError("Email and Password are required!");
         return;
       }
     }
@@ -43,34 +46,95 @@ export default function LoginForm() {
     setPending(true);
   };
   return (
-    <View style={tw` max-w-full p-10 items-center justify-center`}>
-      <ImageBackground source={require("./assets/fer.jpg")}>
-        <Text style={tw`text-lg text-black `}>Login</Text>
-        <TextInput
-          onChangeText={(e) => {
-            setValues({ ...values, identifier: e });
+    <ImageBackground
+      source={require("../../assets/fer.jpg")}
+      resizeMode="cover"
+      style={{
+        width: "100%",
+        height: "100%",
+        alignItems: "center",
+      }}
+    >
+      <Text style={tw`text-24 text-white pb-10  `}>Login</Text>
+      <Input
+        placeholder={"Email or Phone No"}
+        placeholderTextColor="white"
+        inputStyle={{ color: "white" }}
+        inputContainerStyle={{
+          borderBottomColor: "white",
+          width: "60%",
+          alignSelf: "center",
+        }}
+        onChangeText={(e) => {
+          setValues({ ...values, identifier: e });
+        }}
+        value={values.identifier}
+        dataDetectorTypes="all"
+      />
+      <Input
+        placeholder={"Password"}
+        placeholderTextColor="white"
+        inputStyle={{ color: "white" }}
+        inputContainerStyle={{
+          borderBottomColor: "white",
+          width: "60%",
+          alignSelf: "center",
+        }}
+        onChangeText={(e) => {
+          setValues({ ...values, password: e });
+        }}
+        value={values.password}
+        secureTextEntry={true}
+      />
+      {pending ? (
+        <ActivityIndicator color={"white"} size="large" />
+      ) : (
+        <TouchableOpacity onPress={handleLogin}>
+          <Text
+            style={{
+              color: "white",
+              backgroundColor: "rgba(0,0,0,0.2)",
+              paddingHorizontal: "10%",
+              paddingVertical: "3%",
+              fontSize: 16,
+              fontWeight: "bold",
+              borderRadius: 5,
+            }}
+          >
+            Sign In
+          </Text>
+        </TouchableOpacity>
+      )}
+      {error !== "" && (
+        <Text
+          style={{
+            marginTop: "5%",
+            color: "red",
+            backgroundColor: "rgba(0,0,0,0.5)",
+            padding: "2%",
           }}
-          value={values.identifier}
-          placeholder="Email or Phone"
-          dataDetectorTypes="all"
-        />
-        <TextInput
-          onChangeText={(e) => {
-            setValues({ ...values, password: e });
-          }}
-          value={values.password}
-          placeholder="Password"
-          secureTextEntry={true}
-        />
-        {pending ? (
-          <ActivityIndicator />
-        ) : (
-          <TouchableOpacity onPress={handleLogin}>
-            <Text>Login</Text>
-          </TouchableOpacity>
-        )}
-        {error !== "" && <Text style={tw`text-red-500`}>{error}</Text>}
-      </ImageBackground>
-    </View>
+        >
+          {error}
+        </Text>
+      )}
+      <View
+        style={{ flexDirection: "row", position: "absolute", bottom: "5%" }}
+      >
+        <Text style={{ color: "white", marginRight: "3%" }}>
+          Don't have account?
+        </Text>
+        <Pressable onPress={() => navigation.navigate("Signup")}>
+          <Text
+            style={{
+              textDecorationLine: "underline",
+              color: "white",
+              fontWeight: "bold",
+            }}
+          >
+            Signup
+          </Text>
+        </Pressable>
+      </View>
+    </ImageBackground>
   );
 }
