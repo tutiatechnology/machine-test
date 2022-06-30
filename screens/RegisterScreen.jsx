@@ -10,11 +10,13 @@ import {
 } from "react-native";
 import { Dropdown } from "react-native-element-dropdown";
 import { Input } from "react-native-elements";
+import RadioButton from "react-native-radio-button";
 import tw from "twrnc";
 
 export default function RegisterScreen() {
   const navigation = useNavigation();
   const [value, setValue] = useState();
+  const [gender, setGender] = useState();
   const [isFocus, setIsFocus] = useState(false);
   const [values, setValues] = useState({
     identifier: "",
@@ -70,7 +72,7 @@ export default function RegisterScreen() {
         alignItems: "center",
       }}
     >
-      <Text style={tw`text-24 text-white pb-10  `}>Sign up</Text>
+      <Text style={tw`text-20 text-white pb-7  `}>Sign up</Text>
       <Input
         placeholder={"Enter Name"}
         placeholderTextColor="white"
@@ -153,6 +155,35 @@ export default function RegisterScreen() {
           setIsFocus(false);
         }}
       />
+      <View
+        style={{
+          flexDirection: "row",
+          width: "60%",
+          justifyContent: "space-between",
+          marginVertical: "5%",
+        }}
+      >
+        <View style={{ flexDirection: "row" }}>
+          <RadioButton
+            animation="bounceIn"
+            innerColor="white"
+            outerColor="white"
+            isSelected={gender === "male" ? true : false}
+            onPress={() => setGender("male")}
+          />
+          <Text style={{ color: "white", marginLeft: "10%" }}>Male</Text>
+        </View>
+        <View style={{ flexDirection: "row" }}>
+          <RadioButton
+            animation="bounceIn"
+            innerColor="white"
+            outerColor="white"
+            isSelected={gender === "female" ? true : false}
+            onPress={() => setGender("female")}
+          />
+          <Text style={{ color: "white", paddingLeft: "5%" }}>Female</Text>
+        </View>
+      </View>
       {pending ? (
         <ActivityIndicator color={"white"} size="large" />
       ) : (
@@ -160,7 +191,7 @@ export default function RegisterScreen() {
           <Text
             style={{
               color: "white",
-              backgroundColor: "rgba(0,0,0,0.2)",
+              backgroundColor: "rgba(0,0,0,0.5)",
               paddingHorizontal: "10%",
               paddingVertical: "3%",
               fontSize: 16,
@@ -233,8 +264,8 @@ const styles = StyleSheet.create({
     color: "white",
   },
   iconStyle: {
-    width: 40,
-    height: 40,
+    width: 30,
+    height: 30,
   },
   inputSearchStyle: {
     height: 40,
