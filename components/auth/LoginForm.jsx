@@ -5,6 +5,7 @@ import {
   TouchableOpacity,
   TextInput,
   ActivityIndicator,
+  ImageBackground,
 } from "react-native";
 import tw from "twrnc";
 import { openDatabase } from "../../db/connect";
@@ -20,7 +21,7 @@ export default function LoginForm() {
     for (const key in values) {
       if (!values[key]) {
         setPending(false);
-        setError("Email and Password are required!");
+        setError("Email or Phone and Password are required!");
         return;
       }
     }
@@ -43,31 +44,33 @@ export default function LoginForm() {
   };
   return (
     <View style={tw` max-w-full p-10 items-center justify-center`}>
-      <Text style={tw`text-lg text-black `}>Login</Text>
-      <TextInput
-        onChangeText={(e) => {
-          setValues({ ...values, identifier: e });
-        }}
-        value={values.identifier}
-        placeholder="Email or Phone"
-        dataDetectorTypes="all"
-      />
-      <TextInput
-        onChangeText={(e) => {
-          setValues({ ...values, password: e });
-        }}
-        value={values.password}
-        placeholder="Password"
-        secureTextEntry={true}
-      />
-      {pending ? (
-        <ActivityIndicator />
-      ) : (
-        <TouchableOpacity onPress={handleLogin}>
-          <Text>Login</Text>
-        </TouchableOpacity>
-      )}
-      {error !== "" && <Text style={tw`text-red-500`}>{error}</Text>}
+      <ImageBackground source={require("./assets/fer.jpg")}>
+        <Text style={tw`text-lg text-black `}>Login</Text>
+        <TextInput
+          onChangeText={(e) => {
+            setValues({ ...values, identifier: e });
+          }}
+          value={values.identifier}
+          placeholder="Email or Phone"
+          dataDetectorTypes="all"
+        />
+        <TextInput
+          onChangeText={(e) => {
+            setValues({ ...values, password: e });
+          }}
+          value={values.password}
+          placeholder="Password"
+          secureTextEntry={true}
+        />
+        {pending ? (
+          <ActivityIndicator />
+        ) : (
+          <TouchableOpacity onPress={handleLogin}>
+            <Text>Login</Text>
+          </TouchableOpacity>
+        )}
+        {error !== "" && <Text style={tw`text-red-500`}>{error}</Text>}
+      </ImageBackground>
     </View>
   );
 }

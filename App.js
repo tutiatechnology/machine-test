@@ -7,8 +7,8 @@ import GlobalWrapper from "./context/GlobalWrapper";
 import LoginScreen from "./screens/LoginScreen";
 import { useEffect } from "react";
 import { openDatabase } from "./db/connect";
+import AppNavigation from "./navigation/AppNavigation";
 export default function App() {
-  const Stack = createNativeStackNavigator();
   useEffect(() => {
     openDatabase().then((res) => {
       res.transaction((tx) => {
@@ -23,13 +23,7 @@ export default function App() {
       <SafeAreaProvider>
         <StatusBar backgroundColor="black" barStyle="light-content" />
         <GlobalWrapper>
-          <Stack.Navigator>
-            <Stack.Screen
-              name="Login"
-              component={LoginScreen}
-              options={{ headerShown: false }}
-            />
-          </Stack.Navigator>
+          <AppNavigation />
         </GlobalWrapper>
       </SafeAreaProvider>
     </NavigationContainer>
