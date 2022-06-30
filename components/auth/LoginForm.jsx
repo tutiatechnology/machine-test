@@ -10,7 +10,7 @@ import {
 } from "react-native";
 import { Input } from "react-native-elements";
 import tw from "twrnc";
-import { openDatabase } from "../../db/connect";
+
 export default function LoginForm() {
   const navigation = useNavigation();
   const [values, setValues] = useState({
