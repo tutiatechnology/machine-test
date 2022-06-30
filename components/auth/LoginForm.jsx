@@ -29,20 +29,7 @@ export default function LoginForm() {
       }
     }
     //    show loader instead of button
-    openDatabase().then((res) => {
-      console.log("res", res);
-      res.transaction((tx) => {
-        // sending 4 arguments in executeSql
-        tx.executeSql(
-          "SELECT * FROM users",
-          null, // passing sql query and parameters:null
-          // success callback which sends two things Transaction object and ResultSet Object
-          (txObj, { rows: { _array } }) => console.log("ar", _array),
-          // failure callback which sends two things Transaction object and Error
-          (txObj, error) => console.log("Error ", error)
-        ); // end executeSQL
-      }); // end transaction
-    });
+
     setPending(true);
   };
   return (
