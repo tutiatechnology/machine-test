@@ -1,5 +1,6 @@
 import { useNavigation } from "@react-navigation/native";
-import { useState } from "react";
+import { useContext, useState } from "react";
+import { userContext } from "../../context/GlobalWrapper";
 import { ImageBackground, Pressable, Keyboard } from "react-native";
 import { View, Text, TouchableOpacity, ActivityIndicator } from "react-native";
 import { Input } from "react-native-elements";
@@ -8,6 +9,7 @@ import { API } from "../../config";
 
 export default function LoginForm() {
   const navigation = useNavigation();
+  const context = useContext(userContext);
   const [values, setValues] = useState({
     identifier: "",
     password: "",
@@ -36,8 +38,11 @@ export default function LoginForm() {
       },
     })
       .then(async (res) => {
-        const data = await res.json();
-        if (data?.data) {
+        const { data } = await res.json();
+        if (data) {
+          context.setUser(data);
+          // navigate to dashboard
+          navigation.navigate("Home");
         } else {
           setError("invalid credentials!");
         }
