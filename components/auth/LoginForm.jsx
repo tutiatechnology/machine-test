@@ -1,16 +1,11 @@
 import { useNavigation } from "@react-navigation/native";
 import { useState } from "react";
-import { Image, ImageBackground, Pressable } from "react-native";
-import {
-  View,
-  Text,
-  TouchableOpacity,
-  TextInput,
-  ActivityIndicator,
-} from "react-native";
+import { ImageBackground, Pressable, Keyboard } from "react-native";
+import { View, Text, TouchableOpacity, ActivityIndicator } from "react-native";
 import { Input } from "react-native-elements";
 import tw from "twrnc";
-import { openDatabase } from "../../db/connect";
+import { API } from "../../config";
+
 export default function LoginForm() {
   const navigation = useNavigation();
   const [values, setValues] = useState({
@@ -20,6 +15,7 @@ export default function LoginForm() {
   const [pending, setPending] = useState(false);
   const [error, setError] = useState("");
   const handleLogin = () => {
+    Keyboard.dismiss();
     setError("");
     for (const key in values) {
       if (!values[key]) {
@@ -29,20 +25,29 @@ export default function LoginForm() {
       }
     }
     //    show loader instead of button
-    openDatabase().then((res) => {
-      console.log("res", res);
-      res.transaction((tx) => {
-        // sending 4 arguments in executeSql
-        tx.executeSql(
-          "SELECT * FROM users",
-          null, // passing sql query and parameters:null
-          // success callback which sends two things Transaction object and ResultSet Object
-          (txObj, { rows: { _array } }) => console.log("ar", _array),
-          // failure callback which sends two things Transaction object and Error
-          (txObj, error) => console.log("Error ", error)
-        ); // end executeSQL
-      }); // end transaction
-    });
+    fetch(`${API}/login`, {
+      method: "POST",
+      body: JSON.stringify({
+        identifier: values.identifier,
+        password: values.password,
+      }),
+      headers: {
+        "Content-Type": "application/json",
+      },
+    })
+      .then(async (res) => {
+        const data = await res.json();
+        if (data?.data) {
+        } else {
+          setError("invalid credentials!");
+        }
+        setPending(false);
+      })
+      .catch((err) => {
+        setError("invalid credentials!");
+        setPending(false);
+      });
+
     setPending(true);
   };
   return (
