@@ -155,12 +155,24 @@ export default function RegisterScreen() {
           setIsFocus(false);
         }}
       />
+      <Text
+        style={{
+          color: "white",
+          alignSelf: "flex-start",
+          marginLeft: "20%",
+          marginTop: "3%",
+          fontSize: 15,
+        }}
+      >
+        Select gender
+      </Text>
       <View
         style={{
           flexDirection: "row",
           width: "60%",
           justifyContent: "space-between",
-          marginVertical: "5%",
+          marginTop: "5%",
+          marginBottom: "6%",
         }}
       >
         <View style={{ flexDirection: "row" }}>
@@ -173,6 +185,7 @@ export default function RegisterScreen() {
           />
           <Text style={{ color: "white", marginLeft: "10%" }}>Male</Text>
         </View>
+
         <View style={{ flexDirection: "row" }}>
           <RadioButton
             animation="bounceIn"
