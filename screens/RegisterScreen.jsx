@@ -25,30 +25,31 @@ export default function RegisterScreen() {
   const [pending, setPending] = useState(false);
   const [error, setError] = useState("");
   const handleLogin = () => {
-    setError("");
-    for (const key in values) {
-      if (!values[key]) {
-        setPending(false);
-        setError("Email and Password are required!");
-        return;
-      }
-    }
-    //    show loader instead of button
-    openDatabase().then((res) => {
-      console.log("res", res);
-      res.transaction((tx) => {
-        // sending 4 arguments in executeSql
-        tx.executeSql(
-          "SELECT * FROM users",
-          null, // passing sql query and parameters:null
-          // success callback which sends two things Transaction object and ResultSet Object
-          (txObj, { rows: { _array } }) => console.log("ar", _array),
-          // failure callback which sends two things Transaction object and Error
-          (txObj, error) => console.log("Error ", error)
-        ); // end executeSQL
-      }); // end transaction
-    });
-    setPending(true);
+    navigation.navigate("Drawer");
+    // setError("");
+    // for (const key in values) {
+    //   if (!values[key]) {
+    //     setPending(false);
+    //     setError("Email and Password are required!");
+    //     return;
+    //   }
+    // }
+    // //    show loader instead of button
+    // openDatabase().then((res) => {
+    //   console.log("res", res);
+    //   res.transaction((tx) => {
+    //     // sending 4 arguments in executeSql
+    //     tx.executeSql(
+    //       "SELECT * FROM users",
+    //       null, // passing sql query and parameters:null
+    //       // success callback which sends two things Transaction object and ResultSet Object
+    //       (txObj, { rows: { _array } }) => console.log("ar", _array),
+    //       // failure callback which sends two things Transaction object and Error
+    //       (txObj, error) => console.log("Error ", error)
+    //     ); // end executeSQL
+    //   }); // end transaction
+    // });
+    // setPending(true);
   };
 
   const data = [
@@ -146,7 +147,6 @@ export default function RegisterScreen() {
         labelField="label"
         valueField="value"
         placeholder={!isFocus ? "Select City" : "..."}
-        searchPlaceholder="Search..."
         value={value}
         onFocus={() => setIsFocus(true)}
         onBlur={() => setIsFocus(false)}
