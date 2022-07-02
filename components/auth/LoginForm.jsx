@@ -122,6 +122,7 @@ export default function LoginForm() {
             color: "red",
             backgroundColor: "rgba(0,0,0,0.5)",
             padding: "2%",
+            borderRadius: 3,
           }}
         >
           {error}
