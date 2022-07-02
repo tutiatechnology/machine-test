@@ -1,32 +1,34 @@
-import { useNavigation } from "@react-navigation/native";
+import { useNavigation, StackActions } from "@react-navigation/native";
 import { useContext, useState } from "react";
 import { userContext } from "../../context/GlobalWrapper";
 import { ImageBackground, Pressable, Keyboard } from "react-native";
 import { View, Text, TouchableOpacity, ActivityIndicator } from "react-native";
 import { Input } from "react-native-elements";
+import { Formik } from "formik";
+import * as yup from "yup";
 import tw from "twrnc";
 import { API } from "../../config";
 
 export default function LoginForm() {
   const navigation = useNavigation();
   const context = useContext(userContext);
-  const [values, setValues] = useState({
-    identifier: "",
-    password: "",
-  });
   const [pending, setPending] = useState(false);
   const [error, setError] = useState("");
-  const handleLogin = () => {
+  // yup validation
+  const loginValidationSchema = yup.object().shape({
+    identifier: yup.string().when("isEmail", {
+      is: "1",
+      then: yup.string().email("invalid email").required("email is required."),
+      otherwise: yup
+        .string()
+        .required("invalid phone.")
+        .min(6, "invalid phone"),
+    }),
+    password: yup.string().required("Password is required."),
+  });
+  const handleLogin = (values) => {
     Keyboard.dismiss();
     setError("");
-    for (const key in values) {
-      if (!values[key]) {
-        setPending(false);
-        setError("Email and Password are required!");
-        return;
-      }
-    }
-    //    show loader instead of button
     fetch(`${API}/login`, {
       method: "POST",
       body: JSON.stringify({
@@ -41,8 +43,9 @@ export default function LoginForm() {
         const { data } = await res.json();
         if (data) {
           context.setUser(data);
-          // navigate to dashboard
-          navigation.navigate("Home");
+          // reset to dashboard
+          navigation.dispatch(StackActions.replace("Drawer"));
+          return;
         } else {
           setError("invalid credentials!");
         }
@@ -66,68 +69,103 @@ export default function LoginForm() {
       }}
     >
       <Text style={tw`text-24 text-white pb-10  `}>Login</Text>
-      <Input
-        placeholder={"Email or Phone No"}
-        placeholderTextColor="white"
-        inputStyle={{ color: "white" }}
-        inputContainerStyle={{
-          borderBottomColor: "white",
-          width: "60%",
-          alignSelf: "center",
-        }}
-        onChangeText={(e) => {
-          setValues({ ...values, identifier: e });
-        }}
-        value={values.identifier}
-        dataDetectorTypes="all"
-      />
-      <Input
-        placeholder={"Password"}
-        placeholderTextColor="white"
-        inputStyle={{ color: "white" }}
-        inputContainerStyle={{
-          borderBottomColor: "white",
-          width: "60%",
-          alignSelf: "center",
-        }}
-        onChangeText={(e) => {
-          setValues({ ...values, password: e });
-        }}
-        value={values.password}
-        secureTextEntry={true}
-      />
-      {pending ? (
-        <ActivityIndicator color={"white"} size="large" />
-      ) : (
-        <TouchableOpacity onPress={handleLogin}>
-          <Text
-            style={{
-              color: "white",
-              backgroundColor: "rgba(0,0,0,0.2)",
-              paddingHorizontal: "10%",
-              paddingVertical: "3%",
-              fontSize: 16,
-              fontWeight: "bold",
-              borderRadius: 5,
-            }}
-          >
-            Sign In
-          </Text>
-        </TouchableOpacity>
-      )}
-      {error !== "" && (
-        <Text
-          style={{
-            marginTop: "5%",
-            color: "red",
-            backgroundColor: "rgba(0,0,0,0.5)",
-            padding: "2%",
-            borderRadius: 3,
-          }}
-        >
-          {error}
-        </Text>
-      )}
+      <Formik
+        initialValues={{ identifier: "", password: "" }}
+        validationSchema={loginValidationSchema}
+        onSubmit={handleLogin}
+      >
+        {({ handleChange, handleBlur, handleSubmit, values, errors }) => (
+          <>
+            <Input
+              placeholder={"Email or Phone No"}
+              placeholderTextColor="white"
+              inputStyle={{ color: "white" }}
+              inputContainerStyle={{
+                borderBottomColor: "white",
+                width: "60%",
+                alignSelf: "center",
+              }}
+              onChangeText={handleChange("identifier")}
+              value={values.identifier}
+              dataDetectorTypes="all"
+              onBlur={handleBlur("identifier")}
+            />
+            {errors.identifier && (
+              <Text
+                style={{
+                  marginTop: "5%",
+                  color: "red",
+                  backgroundColor: "rgba(0,0,0,0.5)",
+                  padding: "2%",
+                  borderRadius: 3,
+                }}
+              >
+                {errors.identifier}
+              </Text>
+            )}
+            <Input
+              placeholder={"Password"}
+              placeholderTextColor="white"
+              inputStyle={{ color: "white" }}
+              inputContainerStyle={{
+                borderBottomColor: "white",
+                width: "60%",
+                alignSelf: "center",
+              }}
+              onChangeText={handleChange("password")}
+              onBlur={handleBlur("password")}
+              value={values.password}
+              secureTextEntry={true}
+            />
+            {errors.password && (
+              <Text
+                style={{
+                  marginTop: "5%",
+                  color: "red",
+                  backgroundColor: "rgba(0,0,0,0.5)",
+                  padding: "2%",
+                  borderRadius: 3,
+                }}
+              >
+                {errors.password}
+              </Text>
+            )}
+            {pending ? (
+              <ActivityIndicator color={"white"} size="large" />
+            ) : (
+              <TouchableOpacity onPress={handleSubmit}>
+                <Text
+                  style={{
+                    color: "white",
+                    backgroundColor: "rgba(0,0,0,0.2)",
+                    paddingHorizontal: "10%",
+                    paddingVertical: "3%",
+                    fontSize: 16,
+                    fontWeight: "bold",
+                    borderRadius: 5,
+                  }}
+                >
+                  Sign In
+                </Text>
+              </TouchableOpacity>
+            )}
+            {error !== "" && (
+              <Text
+                style={{
+                  marginTop: "5%",
+                  color: "red",
+                  backgroundColor: "rgba(0,0,0,0.5)",
+                  padding: "2%",
+                  borderRadius: 3,
+                }}
+              >
+                {error}
+              </Text>
+            )}
+          </>
+        )}
+      </Formik>
+
       <View
         style={{ flexDirection: "row", position: "absolute", bottom: "5%" }}
       >

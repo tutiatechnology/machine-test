@@ -1,5 +1,5 @@
 import { View, Text, StyleSheet, FlatList, Dimensions } from "react-native";
-import React, { useContext, useEffect } from "react";
+import { useContext, useEffect } from "react";
 import { userContext } from "../context/GlobalWrapper";
 import { Avatar } from "react-native-elements";
 import Card from "../components/Card";

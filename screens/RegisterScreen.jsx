@@ -1,13 +1,7 @@
 import { useNavigation } from "@react-navigation/native";
 import { useState } from "react";
-import { Image, ImageBackground, Pressable, StyleSheet } from "react-native";
-import {
-  View,
-  Text,
-  TouchableOpacity,
-  TextInput,
-  ActivityIndicator,
-} from "react-native";
+import { ImageBackground, Pressable, StyleSheet } from "react-native";
+import { View, Text, TouchableOpacity, ActivityIndicator } from "react-native";
 import { Dropdown } from "react-native-element-dropdown";
 import { Input } from "react-native-elements";
 import RadioButton from "react-native-radio-button";
@@ -74,6 +68,7 @@ export default function RegisterScreen() {
       }}
     >
       <Text style={tw`text-20 text-white pb-7  `}>Sign up</Text>
+
       <Input
         placeholder={"Enter Name"}
         placeholderTextColor="white"

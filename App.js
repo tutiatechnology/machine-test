@@ -4,6 +4,7 @@ import { NavigationContainer } from "@react-navigation/native";
 import "react-native-gesture-handler";
 import GlobalWrapper from "./context/GlobalWrapper";
 import AppNavigation from "./navigation/AppNavigation";
+
 export default function App() {
   return (
     <NavigationContainer>

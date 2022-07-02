@@ -3,9 +3,9 @@
  *
  */
 
-import React, { useState } from "react";
+import { useState, createContext } from "react";
 
-export const userContext = React.createContext("");
+export const userContext = createContext("");
 function GlobalWrapper(props) {
   const [currentUser, setCurrentUser] = useState(null);
 
@@ -15,6 +15,7 @@ function GlobalWrapper(props) {
   function getUser() {
     return currentUser;
   }
+
   function logout() {
     setCurrentUser(null);
   }

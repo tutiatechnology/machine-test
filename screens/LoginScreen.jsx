@@ -1,5 +1,5 @@
 import { View, SafeAreaView, StyleSheet } from "react-native";
-import React, { useEffect } from "react";
+import { useEffect } from "react";
 import LoginForm from "../components/auth/LoginForm";
 
 export default function LoginScreen() {
