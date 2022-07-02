@@ -5,21 +5,18 @@ import { View, Text, TouchableOpacity, ActivityIndicator } from "react-native";
 import { Dropdown } from "react-native-element-dropdown";
 import { Input } from "react-native-elements";
 import RadioButton from "react-native-radio-button";
+import { Formik } from "formik";
+import * as yup from "yup";
 import tw from "twrnc";
 
 export default function RegisterScreen() {
   const navigation = useNavigation();
-  const [value, setValue] = useState();
-  const [gender, setGender] = useState();
   const [isFocus, setIsFocus] = useState(false);
-  const [values, setValues] = useState({
-    identifier: "",
-    password: "",
-  });
   const [pending, setPending] = useState(false);
-  const [error, setError] = useState("");
-  const handleLogin = () => {
-    navigation.navigate("Drawer");
+  const [serverError, setServerError] = useState("");
+  const handleRegister = (values) => {
+    console.log("❤", values);
+    // navigation.navigate("Drawer");
     // setError("");
     // for (const key in values) {
     //   if (!values[key]) {
@@ -56,7 +53,24 @@ export default function RegisterScreen() {
     { label: "Berlin", value: "Berlin" },
     { label: "London", value: "London" },
   ];
+  const registerValidationSchema = yup.object().shape({
+    email: yup.string().email("invalid email").required("email is required."),
+    name: yup.string("invalid name").required("name is required."),
+    phone: yup.number("invalid phone").required("Phone is required."),
 
+    password: yup.string().required("Password is required."),
+  });
+  const ErrorComponent = ({ data }) => (
+    <Text
+      style={{
+        color: "red",
+        backgroundColor: "rgba(0,0,0,0.5)",
+        borderRadius: 3,
+      }}
+    >
+      {data}
+    </Text>
+  );
   return (
     <ImageBackground
       source={require("../assets/fer.jpg")}
@@ -68,161 +82,183 @@ export default function RegisterScreen() {
       }}
     >
       <Text style={tw`text-20 text-white pb-7  `}>Sign up</Text>
-
-      <Input
-        placeholder={"Enter Name"}
-        placeholderTextColor="white"
-        inputStyle={{ color: "white" }}
-        inputContainerStyle={{
-          borderBottomColor: "white",
-          width: "60%",
-          alignSelf: "center",
+      <Formik
+        initialValues={{
+          email: "",
+          password: "",
+          phone: "",
+          name: "",
+          gender: "",
+          city: "",
         }}
-        onChangeText={(e) => {
-          setValues({ ...values, identifier: e });
-        }}
-        value={values.identifier}
-        dataDetectorTypes="all"
-      />
-      <Input
-        placeholder={"Enter Email"}
-        placeholderTextColor="white"
-        inputStyle={{ color: "white" }}
-        inputContainerStyle={{
-          borderBottomColor: "white",
-          width: "60%",
-          alignSelf: "center",
-        }}
-        onChangeText={(e) => {
-          setValues({ ...values, identifier: e });
-        }}
-        value={values.identifier}
-        dataDetectorTypes="all"
-      />
-      <Input
-        placeholder={"Enter Mobile Number"}
-        placeholderTextColor="white"
-        inputStyle={{ color: "white" }}
-        inputContainerStyle={{
-          borderBottomColor: "white",
-          width: "60%",
-          alignSelf: "center",
-        }}
-        onChangeText={(e) => {
-          setValues({ ...values, identifier: e });
-        }}
-        value={values.identifier}
-        dataDetectorTypes="all"
-      />
-      <Input
-        placeholder={"Enter Password"}
-        placeholderTextColor="white"
-        inputStyle={{ color: "white" }}
-        inputContainerStyle={{
-          borderBottomColor: "white",
-          width: "60%",
-          alignSelf: "center",
-        }}
-        onChangeText={(e) => {
-          setValues({ ...values, password: e });
-        }}
-        value={values.password}
-        secureTextEntry={true}
-      />
-      <Dropdown
-        data={data}
-        style={[styles.dropdown]}
-        placeholderStyle={styles.placeholderStyle}
-        selectedTextStyle={styles.selectedTextStyle}
-        inputSearchStyle={styles.inputSearchStyle}
-        iconStyle={styles.iconStyle}
-        iconColor="white"
-        search={false}
-        maxHeight={300}
-        labelField="label"
-        valueField="value"
-        placeholder={!isFocus ? "Select City" : "..."}
-        value={value}
-        onFocus={() => setIsFocus(true)}
-        onBlur={() => setIsFocus(false)}
-        onChange={(item) => {
-          setValue(item.value);
-          setIsFocus(false);
-        }}
-      />
-      <Text
-        style={{
-          color: "white",
-          alignSelf: "flex-start",
-          marginLeft: "20%",
-          marginTop: "3%",
-          fontSize: 15,
-        }}
+        validationSchema={registerValidationSchema}
+        onSubmit={handleRegister}
       >
-        Select gender
-      </Text>
-      <View
-        style={{
-          flexDirection: "row",
-          width: "60%",
-          justifyContent: "space-between",
-          marginTop: "5%",
-          marginBottom: "6%",
-        }}
-      >
-        <View style={{ flexDirection: "row" }}>
-          <RadioButton
-            animation="bounceIn"
-            innerColor="white"
-            outerColor="white"
-            isSelected={gender === "male" ? true : false}
-            onPress={() => setGender("male")}
-          />
-          <Text style={{ color: "white", marginLeft: "10%" }}>Male</Text>
-        </View>
+        {({
+          handleChange,
+          handleBlur,
+          handleSubmit,
+          values,
+          errors,
+          setFieldValue,
+        }) => (
+          <>
+            <Input
+              placeholder={"Enter Name"}
+              placeholderTextColor="white"
+              inputStyle={{ color: "white" }}
+              inputContainerStyle={{
+                borderBottomColor: "white",
+                width: "60%",
+                alignSelf: "center",
+              }}
+              onChangeText={handleChange("name")}
+              onBlur={handleBlur("name")}
+              value={values.name}
+              dataDetectorTypes="all"
+            />
+            {errors.name && <ErrorComponent data={errors.name} />}
+            <Input
+              placeholder={"Enter Email"}
+              placeholderTextColor="white"
+              inputStyle={{ color: "white" }}
+              inputContainerStyle={{
+                borderBottomColor: "white",
+                width: "60%",
+                alignSelf: "center",
+              }}
+              onChangeText={handleChange("email")}
+              onBlur={handleBlur("email")}
+              value={values.email}
+              keyboardType="email-address"
+            />
+            {errors.email && <ErrorComponent data={errors.email} />}
 
-        <View style={{ flexDirection: "row" }}>
-          <RadioButton
-            animation="bounceIn"
-            innerColor="white"
-            outerColor="white"
-            isSelected={gender === "female" ? true : false}
-            onPress={() => setGender("female")}
-          />
-          <Text style={{ color: "white", paddingLeft: "5%" }}>Female</Text>
-        </View>
-      </View>
-      {pending ? (
-        <ActivityIndicator color={"white"} size="large" />
-      ) : (
-        <TouchableOpacity onPress={handleLogin}>
-          <Text
-            style={{
-              color: "white",
-              backgroundColor: "rgba(0,0,0,0.5)",
-              paddingHorizontal: "10%",
-              paddingVertical: "3%",
-              fontSize: 16,
-              fontWeight: "bold",
-              borderRadius: 5,
-            }}
-          >
-            Signup
-          </Text>
-        </TouchableOpacity>
-      )}
-      {error !== "" && (
-        <Text
-          style={{
-            marginTop: "5%",
-            color: "red",
-            backgroundColor: "rgba(0,0,0,0.5)",
-            padding: "2%",
-          }}
-        >
-          {error}
-        </Text>
-      )}
+            <Input
+              placeholder={"Enter Mobile Number"}
+              placeholderTextColor="white"
+              inputStyle={{ color: "white" }}
+              inputContainerStyle={{
+                borderBottomColor: "white",
+                width: "60%",
+                alignSelf: "center",
+              }}
+              onChangeText={handleChange("phone")}
+              onBlur={handleBlur("phone")}
+              value={values.phone}
+              dataDetectorTypes="phoneNumber"
+              keyboardType="number-pad"
+            />
+            {errors.phone && <ErrorComponent data={errors.phone} />}
+
+            <Input
+              placeholder={"Enter Password"}
+              placeholderTextColor="white"
+              inputStyle={{ color: "white" }}
+              inputContainerStyle={{
+                borderBottomColor: "white",
+                width: "60%",
+                alignSelf: "center",
+              }}
+              onChangeText={handleChange("password")}
+              onBlur={handleBlur("password")}
+              value={values.password}
+              secureTextEntry={true}
+            />
+            {errors.password && <ErrorComponent data={errors.password} />}
+
+            <Dropdown
+              data={data}
+              style={[styles.dropdown]}
+              placeholderStyle={styles.placeholderStyle}
+              selectedTextStyle={styles.selectedTextStyle}
+              inputSearchStyle={styles.inputSearchStyle}
+              iconStyle={styles.iconStyle}
+              iconColor="white"
+              search={false}
+              maxHeight={300}
+              labelField="label"
+              placeholder={!isFocus ? "Select City" : "..."}
+              onFocus={() => setIsFocus(true)}
+              onBlur={() => setIsFocus(false)}
+              valueField="value"
+              value={values.city}
+              onChange={(item) => {
+                console.log(item);
+                setFieldValue("city", item.value);
+                setIsFocus(false);
+              }}
+            />
+            {errors.city && <ErrorComponent data={errors.city} />}
+
+            <Text
+              style={{
+                color: "white",
+                alignSelf: "flex-start",
+                marginLeft: "20%",
+                marginTop: "3%",
+                fontSize: 15,
+              }}
+            >
+              Select gender
+            </Text>
+            <View
+              style={{
+                flexDirection: "row",
+                width: "60%",
+                justifyContent: "space-between",
+                marginTop: "5%",
+                marginBottom: "6%",
+              }}
+            >
+              <View style={{ flexDirection: "row" }}>
+                <RadioButton
+                  animation="bounceIn"
+                  innerColor="white"
+                  outerColor="white"
+                  isSelected={values.gender === "male" ? true : false}
+                  onPress={() => setFieldValue("gender", "male")}
+                />
+                <Text style={{ color: "white", marginLeft: "10%" }}>Male</Text>
+              </View>
+
+              <View style={{ flexDirection: "row" }}>
+                <RadioButton
+                  animation="bounceIn"
+                  innerColor="white"
+                  outerColor="white"
+                  isSelected={values.gender === "female" ? true : false}
+                  onPress={() => setFieldValue("gender", "female")}
+                />
+                <Text style={{ color: "white", paddingLeft: "5%" }}>
+                  Female
+                </Text>
+              </View>
+              {errors.gender && <ErrorComponent data={errors.gender} />}
+            </View>
+            {pending ? (
+              <ActivityIndicator color={"white"} size="large" />
+            ) : (
+              <TouchableOpacity onPress={handleSubmit}>
+                <Text
+                  style={{
+                    color: "white",
+                    backgroundColor: "rgba(0,0,0,0.5)",
+                    paddingHorizontal: "10%",
+                    paddingVertical: "3%",
+                    fontSize: 16,
+                    fontWeight: "bold",
+                    borderRadius: 5,
+                  }}
+                >
+                  Signup
+                </Text>
+              </TouchableOpacity>
+            )}
+          </>
+        )}
+      </Formik>
+      {serverError !== "" && <ErrorComponent data={serverError} />}
       <View
         style={{ flexDirection: "row", position: "absolute", bottom: "5%" }}
       >
