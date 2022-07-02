@@ -10,7 +10,7 @@ export default function HomeScreen() {
   }, []);
   return (
     <View>
-      <Text>Dashboard</Text>
+      <View>Dashboard</View>
     </View>
   );
 }
