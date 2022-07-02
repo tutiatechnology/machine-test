@@ -13,7 +13,7 @@ export default function LoginForm() {
   const navigation = useNavigation();
   const context = useContext(userContext);
   const [pending, setPending] = useState(false);
-  const [error, setError] = useState("");
+  const [serverError, setServerError] = useState("");
   // yup validation
   const loginValidationSchema = yup.object().shape({
     identifier: yup.string().when("isEmail", {
@@ -27,8 +27,9 @@ export default function LoginForm() {
     password: yup.string().required("Password is required."),
   });
   const handleLogin = (values) => {
+    setPending(true);
     Keyboard.dismiss();
-    setError("");
+    setServerError("");
     fetch(`${API}/login`, {
       method: "POST",
       body: JSON.stringify({
@@ -47,17 +48,29 @@ export default function LoginForm() {
           navigation.dispatch(StackActions.replace("Drawer"));
           return;
         } else {
-          setError("invalid credentials!");
+          setServerError("invalid credentials!");
         }
         setPending(false);
       })
       .catch((err) => {
-        setError("invalid credentials!");
+        console.error(err);
+        setServerError("invalid credentials!");
         setPending(false);
       });
-
-    setPending(true);
   };
+  const ErrorComponent = ({ data }) => (
+    <Text
+      style={{
+        marginTop: "5%",
+        color: "red",
+        backgroundColor: "rgba(0,0,0,0.5)",
+        padding: "2%",
+        borderRadius: 3,
+      }}
+    >
+      {data}
+    </Text>
+  );
   return (
     <ImageBackground
       source={require("../../assets/fer.jpg")}
@@ -90,19 +103,7 @@ export default function LoginForm() {
               dataDetectorTypes="all"
               onBlur={handleBlur("identifier")}
             />
-            {errors.identifier && (
-              <Text
-                style={{
-                  marginTop: "5%",
-                  color: "red",
-                  backgroundColor: "rgba(0,0,0,0.5)",
-                  padding: "2%",
-                  borderRadius: 3,
-                }}
-              >
-                {errors.identifier}
-              </Text>
-            )}
+            {errors.identifier && <ErrorComponent data={errors.identifier} />}
             <Input
               placeholder={"Password"}
               placeholderTextColor="white"
@@ -117,19 +118,8 @@ export default function LoginForm() {
               value={values.password}
               secureTextEntry={true}
             />
-            {errors.password && (
-              <Text
-                style={{
-                  marginTop: "5%",
-                  color: "red",
-                  backgroundColor: "rgba(0,0,0,0.5)",
-                  padding: "2%",
-                  borderRadius: 3,
-                }}
-              >
-                {errors.password}
-              </Text>
-            )}
+            {errors.password && <ErrorComponent data={errors.password} />}
+
             {pending ? (
               <ActivityIndicator color={"white"} size="large" />
             ) : (
@@ -149,19 +139,7 @@ export default function LoginForm() {
                 </Text>
               </TouchableOpacity>
             )}
-            {error !== "" && (
-              <Text
-                style={{
-                  marginTop: "5%",
-                  color: "red",
-                  backgroundColor: "rgba(0,0,0,0.5)",
-                  padding: "2%",
-                  borderRadius: 3,
-                }}
-              >
-                {error}
-              </Text>
-            )}
+            {serverError !== "" && <ErrorComponent data={serverError} />}
           </>
         )}
       </Formik>

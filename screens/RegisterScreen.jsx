@@ -1,46 +1,57 @@
-import { useNavigation } from "@react-navigation/native";
-import { useState } from "react";
-import { ImageBackground, Pressable, StyleSheet } from "react-native";
-import { View, Text, TouchableOpacity, ActivityIndicator } from "react-native";
+import { useNavigation, StackActions } from "@react-navigation/native";
+import { useContext, useState } from "react";
+import {
+  ImageBackground,
+  Pressable,
+  StyleSheet,
+  Keyboard,
+  ActivityIndicator,
+  TouchableOpacity,
+  Text,
+  View,
+} from "react-native";
 import { Dropdown } from "react-native-element-dropdown";
 import { Input } from "react-native-elements";
 import RadioButton from "react-native-radio-button";
+import { API } from "../config";
 import { Formik } from "formik";
 import * as yup from "yup";
 import tw from "twrnc";
+import { userContext } from "../context/GlobalWrapper";
 
 export default function RegisterScreen() {
   const navigation = useNavigation();
   const [isFocus, setIsFocus] = useState(false);
   const [pending, setPending] = useState(false);
   const [serverError, setServerError] = useState("");
+  const context = useContext(userContext);
+
   const handleRegister = (values) => {
-    console.log("❤", values);
-    // navigation.navigate("Drawer");
-    // setError("");
-    // for (const key in values) {
-    //   if (!values[key]) {
-    //     setPending(false);
-    //     setError("Email and Password are required!");
-    //     return;
-    //   }
-    // }
-    // //    show loader instead of button
-    // openDatabase().then((res) => {
-    //   console.log("res", res);
-    //   res.transaction((tx) => {
-    //     // sending 4 arguments in executeSql
-    //     tx.executeSql(
-    //       "SELECT * FROM users",
-    //       null, // passing sql query and parameters:null
-    //       // success callback which sends two things Transaction object and ResultSet Object
-    //       (txObj, { rows: { _array } }) => console.log("ar", _array),
-    //       // failure callback which sends two things Transaction object and Error
-    //       (txObj, error) => console.log("Error ", error)
-    //     ); // end executeSQL
-    //   }); // end transaction
-    // });
-    // setPending(true);
+    Keyboard.dismiss();
+    setServerError("");
+    setPending(true);
+    fetch(`${API}/signup`, {
+      method: "POST",
+      body: JSON.stringify(values),
+      headers: {
+        "Content-Type": "application/json",
+      },
+    })
+      .then((res) => {
+        if (res.status === 200) {
+          context.setUser(values);
+          // reset to dashboard
+          navigation.dispatch(StackActions.replace("Drawer"));
+          return;
+        } else {
+          setServerError("Sorry, server error!");
+        }
+        setPending(false);
+      })
+      .catch((err) => {
+        setServerError("Sorry, server error!");
+        setPending(false);
+      });
   };
 
   const data = [
@@ -56,9 +67,13 @@ export default function RegisterScreen() {
   const registerValidationSchema = yup.object().shape({
     email: yup.string().email("invalid email").required("email is required."),
     name: yup.string("invalid name").required("name is required."),
-    phone: yup.number("invalid phone").required("Phone is required."),
-
-    password: yup.string().required("Password is required."),
+    phone: yup.string().required("invalid phone.").min(6, "invalid phone"),
+    password: yup
+      .string()
+      .required("Password is required.")
+      .min(7, "Password at least 7 char."),
+    gender: yup.string().required("gender is required."),
+    city: yup.string().required("city is required."),
   });
   const ErrorComponent = ({ data }) => (
     <Text
@@ -113,7 +128,6 @@ export default function RegisterScreen() {
                 alignSelf: "center",
               }}
               onChangeText={handleChange("name")}
-              onBlur={handleBlur("name")}
               value={values.name}
               dataDetectorTypes="all"
             />
@@ -128,7 +142,6 @@ export default function RegisterScreen() {
                 alignSelf: "center",
               }}
               onChangeText={handleChange("email")}
-              onBlur={handleBlur("email")}
               value={values.email}
               keyboardType="email-address"
             />
@@ -144,7 +157,6 @@ export default function RegisterScreen() {
                 alignSelf: "center",
               }}
               onChangeText={handleChange("phone")}
-              onBlur={handleBlur("phone")}
               value={values.phone}
               dataDetectorTypes="phoneNumber"
               keyboardType="number-pad"

@@ -1,11 +1,17 @@
 import { createDrawerNavigator } from "@react-navigation/drawer";
+import { useNavigation, StackActions } from "@react-navigation/native";
+
+import { useContext } from "react";
 import { Pressable, Text, View } from "react-native";
 import { Avatar } from "react-native-elements";
+import { userContext } from "../context/GlobalWrapper";
 import HomeScreen from "../screens/HomeScreen";
-
 const Drawer = createDrawerNavigator();
 
 function DrawerNavigator(props) {
+  const user = useContext(userContext);
+  const navigation = useNavigation();
+
   return (
     <Drawer.Navigator
       drawerContent={(props) => {
@@ -26,7 +32,10 @@ function DrawerNavigator(props) {
                 justifyContent: "center",
                 alignItems: "center",
               }}
-              onPress={() => console.log("pressed")}
+              onPress={() => {
+                user.logout();
+                navigation.dispatch(StackActions.replace("Login"));
+              }}
             >
               <Text
                 style={{ fontSize: 18, color: "white", fontWeight: "bold" }}

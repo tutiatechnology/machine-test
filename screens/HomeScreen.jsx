@@ -1,5 +1,5 @@
 import { View, Text, StyleSheet, FlatList, Dimensions } from "react-native";
-import { useContext, useEffect } from "react";
+import { useContext } from "react";
 import { userContext } from "../context/GlobalWrapper";
 import { Avatar } from "react-native-elements";
 import Card from "../components/Card";
@@ -9,11 +9,8 @@ import { Image } from "react-native";
 const size = Dimensions.get("window");
 
 export default function HomeScreen() {
-  const user = useContext(userContext);
-
-  useEffect(() => {
-    console.log("User is ", user.getUser());
-  }, []);
+  const userCtx = useContext(userContext);
+  const user = userCtx.getUser();
 
   const data = [
     {
@@ -51,7 +48,10 @@ export default function HomeScreen() {
           source={require("../assets/man.jpg")}
           containerStyle={{ elevation: 2 }}
         />
-        <Text style={styles.welcomeText}>Welcome,{"\n"}Ahmad</Text>
+        <Text style={styles.welcomeText}>
+          Welcome,{"\n"}
+          {user?.name}
+        </Text>
       </View>
       <Text style={styles.productListText}>Product List</Text>
       <View style={styles.proudctListContainer}>
